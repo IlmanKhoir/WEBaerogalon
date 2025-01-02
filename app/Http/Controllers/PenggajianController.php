@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use app\Models\Pegawai;
 use Illuminate\Support\Facades\DB;
+
 
 class PenggajianController extends Controller
 {

@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="container">
-    <h1>Edit Pegawai</h1>
-    <form method="POST" action="{{ route('pegawai.update', $pegawai->id) }}">
+    <h1>Edit Pegawai</h1>   
+    <form method="POST" action="{{ route('datapegawai.update', $pegawai->id) }}">
         @csrf
-        @method('PUT')  <!-- Menggunakan PUT untuk operasi update -->
+        @method('PUT')  
         <div class="form-group">
             <label for="nama">Employe Name</label>
             <input type="text" class="form-control" id="nama" name="nama" value="{{ $pegawai->nama }}" required>

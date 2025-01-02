@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Absensi;
 
 class AbsensiController extends Controller
 {
@@ -120,5 +121,22 @@ class AbsensiController extends Controller
         $absensi = $query->orderBy('a.tanggal', 'desc')->get();
 
         return response()->json($absensi);
+    }
+        public function destroy($id)
+    {
+        try {
+            $absensi = Absensi::findOrFail($id); // Cari data absensi berdasarkan ID
+            $absensi->delete(); // Hapus data
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Absensi berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus absensi. Silakan coba lagi.'
+            ], 500);
+        }
     }
 }

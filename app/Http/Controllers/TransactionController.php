@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -155,4 +156,24 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+    public function exportPdf()
+    {
+        $transactions = DB::table('transactions as t')
+            ->join('customers as c', 't.customer_id', '=', 'c.id')
+            ->select([
+                't.id',
+                'c.name as customer_name',
+                't.galon_out',
+                't.galon_in',
+                't.transaction_date',
+                't.total_price'
+            ])
+            ->where('t.is_active', true)
+            ->orderBy('t.transaction_date', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('transactions.pdf', ['transactions' => $transactions]);
+
+        return $pdf->download('transactions.pdf');
+    } 
 }

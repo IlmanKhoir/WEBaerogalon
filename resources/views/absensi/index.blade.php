@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container">
     <div class="card">
@@ -47,6 +46,7 @@
                             <th>Nama Pegawai</th>
                             <th>Tanggal</th>
                             <th>Waktu Absen</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,6 +56,11 @@
                             <td>{{ $a->nama }}</td>
                             <td>{{ date('d/m/Y', strtotime($a->tanggal)) }}</td>
                             <td>{{ date('H:i:s', strtotime($a->created_at)) }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="{{ $a->id }}">
+                                    Hapus
+                                </button>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -138,6 +143,60 @@
 @endsection
 
 @section('scripts')
+<script>
+$(document).on('click', '.btn-delete', function() {
+    let absensiId = $(this).data('id'); // Ambil ID absensi
+
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data absensi akan dihapus secara permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: `/absensi/${absensiId}`, // Route delete
+                type: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF Token
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Loading...',
+                        text: 'Sedang memproses data',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire(
+                            'Berhasil!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            window.location.reload(); // Refresh halaman
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire(
+                        'Gagal!',
+                        xhr.responseJSON.message || 'Terjadi kesalahan!',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+});
+</script>
 <script>
 $(document).ready(function() {
     // Event handler untuk form tambah absensi

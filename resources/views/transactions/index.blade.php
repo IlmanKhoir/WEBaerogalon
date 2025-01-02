@@ -94,6 +94,12 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex justify-content-between mb-3 align-items-center">
+            <a href="{{ route('expenses.index') }}" class="btn btn-info btn-ml ml-3">
+                <i class="fas fa-money-bill-wave"></i> Lihat Pengeluaran
+            </a>
+            <a href="{{ route('transactions.export.pdf') }}" class="btn btn-danger btn-ml mr-3">Export PDF</a>
+        </div>
     </div>
 </div>
 
@@ -119,14 +125,37 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Galon Out</label>
-                        <input type="number" name="galon_out" class="form-control" required>
-                    </div>
+
                     <div class="form-group">
                         <label>Galon In</label>
-                        <input type="number" name="galon_in" class="form-control" required>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons" id="galonInOptions">
+                            @for ($i = 1; $i <= 5; $i++)
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="galon_in_option" value="{{ $i }}"> {{ $i }}
+                            </label>
+                            @endfor
+                            <label class="btn btn-outline-secondary">
+                                <input type="radio" name="galon_in_option" value="other"> Lainnya
+                            </label>
+                        </div>
+                        <input type="number" name="galon_in" class="form-control mt-2" placeholder="Masukkan jumlah galon" style="display: none;">
                     </div>
+
+                    <div class="form-group">
+                        <label>Galon Out</label>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons" id="galonOutOptions">
+                            @for ($i = 1; $i <= 5; $i++)
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="galon_out_option" value="{{ $i }}"> {{ $i }}
+                            </label>
+                            @endfor
+                            <label class="btn btn-outline-secondary">
+                                <input type="radio" name="galon_out_option" value="other"> Lainnya
+                            </label>
+                        </div>
+                        <input type="number" name="galon_out" class="form-control mt-2" placeholder="Masukkan jumlah galon" style="display: none;">
+                    </div>
+
                     <div class="form-group">
                         <label>Transaction Date</label>
                         <input type="date" name="transaction_date" class="form-control" required>
@@ -206,13 +235,12 @@
         </div>
     </div>
 </div>
-<a href="{{ route('expenses.index') }}" class="btn btn-info btn-lg mt-3">
-    <i class="fas fa-money-bill-wave"></i> Lihat Pengeluaran
-</a>
+
 @endsection
 
 @section('scripts')
 <script>
+    // Script untuk menampilkan data transaksi
 $(document).ready(function() {
     // Event handler untuk pencarian
     $('#search').on('keyup', function() {
@@ -241,13 +269,14 @@ $(document).ready(function() {
         
         window.location.href = currentUrl.toString();
     });
-    // Set nilai selected pada dropdown sesuai dengan yang aktif
+    // Script untuk menampilkan jumlah data per halaman
     $('#per-page').val("{{ $perPage }}");
 
     // Event handler untuk tombol Add
     $('#addTransactionForm').on('submit', function(e) {
         e.preventDefault();
         
+        // Script untuk menambahkan data transaksi
         $.ajax({
             url: "{{ route('transactions.store') }}",
             type: "POST",
@@ -272,6 +301,7 @@ $(document).ready(function() {
                     });
                 }
             },
+            //notifikasi kesalahan
             error: function(xhr) {
                 console.log(xhr.responseText);
                 alert('Terjadi kesalahan! ' + xhr.responseText);
@@ -279,6 +309,28 @@ $(document).ready(function() {
         });
     });
 
+    // Galon In Logic
+    $('input[name="galon_in_option"]').on('change', function() {
+        if ($(this).val() === 'other') {
+            $('input[name="galon_in"]').show().attr('required', true);
+            $('input[name="galon_in"]').val(''); // Clear value when switching to manual input
+        } else {
+            $('input[name="galon_in"]').hide().removeAttr('required');
+            $('input[name="galon_in"]').val($(this).val()); // Sync selected value to input
+        }
+    });
+
+        // Galon Out Logic
+        $('input[name="galon_out_option"]').on('change', function() {
+        if ($(this).val() === 'other') {
+            $('input[name="galon_out"]').show().attr('required', true);
+            $('input[name="galon_out"]').val(''); // Clear value when switching to manual input
+        } else {
+            $('input[name="galon_out"]').hide().removeAttr('required');
+            $('input[name="galon_out"]').val($(this).val()); // Sync selected value to input
+        }
+    });
+    
     // Event handler untuk tombol Edit
     $('.edit-btn').on('click', function() {
         var id = $(this).data('id');
@@ -373,42 +425,5 @@ $(document).ready(function() {
 
 });
 </script>
-<script>
-        // Mencegah pengguna menekan tombol back
-        (function (global) {
-            if (typeof (global) === "undefined") {
-                throw new Error("window is undefined");
-            }
 
-            var _hash = "!";
-            var noBackPlease = function () {
-                global.location.href += "#";
-
-                // Menambahkan hash ke URL
-                global.setTimeout(function () {
-                    global.location.href += "!";
-                }, 50);
-            };
-
-            global.onhashchange = function () {
-                if (global.location.hash !== _hash) {
-                    global.location.hash = _hash;
-                }
-            };
-
-            global.onload = function () {
-                noBackPlease();
-
-                // Menonaktifkan tombol back
-                document.body.onkeydown = function (e) {
-                    var elm = e.target.nodeName.toLowerCase();
-                    if (e.which === 8 && (elm !== 'input' && elm !== 'textarea')) {
-                        e.preventDefault();
-                    }
-                    // Mencegah tombol backspace
-                    e.stopPropagation();
-                };
-            };
-        })(window);
-    </script>
 @endsection

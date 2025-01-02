@@ -7,6 +7,8 @@
     <link rel="icon" href="{{ asset('gambar/gambarair.jpg') }}" type="image/x-icon" style="border-radius: 50%;">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6)), 
@@ -21,6 +23,7 @@
         }
 
         .hero {
+            max-width: 100%;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -31,9 +34,9 @@
         }
 
         .hero-content {
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
             animation: fadeInUp 1.5s ease-out;
         }
 
@@ -89,7 +92,6 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(5px);
-            border-radius: 10px 0 0 10px;
         }
 
         .price-card {
@@ -243,7 +245,7 @@
 
         /* Standarisasi ukuran section */
         .section-padding {
-            padding: 60px 0;
+            padding: 0;
         }
         
         /* Standarisasi ukuran heading */
@@ -460,9 +462,9 @@
     </section>
 
     <!-- Tambahkan section area pengiriman setelah hero section -->
-    <section class="delivery-area section-padding">
-        <div class="container">
-            <h2 class="text-center section-title">Area Pengiriman</h2>
+    <section class="delivery-area section-padding ">
+        <div class="container pb-5">
+            <h2 class="text-center section-title pt-5">Area Pengiriman</h2>
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card card-standard">
@@ -500,9 +502,9 @@
     </section>
 
     <!-- Fitur Rekomendasi Air Galon -->
-    <section class="features-section section-padding">
+    <section class="features-section section-padding pb-5">
         <div class="container">
-            <h2 class="text-center section-title mb-5">Mengapa Memilih Kami?</h2>
+            <h2 class="text-center section-title mb-5 mt-5">Mengapa Memilih Kami?</h2>
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <div class="feature-card card-standard">
@@ -577,80 +579,38 @@
 
     <!-- Pilihan Paket Layanan -->
     <section class="pricing-section" id="order">
-        <div class="container">
-            <h2 class="text-center text-white mb-5">Pilihan Paket Layanan</h2>
-            <div class="row justify-content-center align-items-center">
+    <div class="container">
+        <h2 class="text-center text-white mb-5">Pilihan Paket Layanan</h2>
+        <div class="row justify-content-center align-items-center">
+            @foreach($hargaGalon as $paket)
                 <div class="col-lg-5 col-md-6 mb-4">
                     <div class="price-card">
                         <div class="price-header">
-                            <h3>Paket Reguler</h3>
-                            <div class="price-amount">Rp 12.000</div>
-                            <div class="price-period">per galon</div>
+                            <h3>{{ $paket->nama_paket }}</h3>
+                            <div class="price-amount">Rp {{ number_format($paket->price, 0, ',', '.') }}</div>
+                            <div class="price-period">{{ $paket->description }}</div>
                         </div>
                         <ul class="price-features">
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Air Minum Premium
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Pengiriman Standar
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Galon Higienis
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Layanan Pelanggan
-                            </li>
+                            @foreach(json_decode($paket->benefit) as $benefit)
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    {{ $benefit }}
+                                </li>
+                            @endforeach
                         </ul>
                         <div class="price-button">
-                            <a href="https://wa.me/6285893930323?text=Halo,%20saya%20ingin%20memesan%20galon%20air%20Paket%20Reguler%20dengan%20harga%20Rp%2012.000%20per%20galon
-                            .%20Lokasi%20saya%20di%20area%20Parungpanjang.%20Mohon%20dibantu%20prosesnya." 
+                            <a href="https://wa.me/6285893930323?text=Halo,%20saya%20tertarik%20dengan%20{{ urlencode($paket->nama_paket) }}.%20Harga%20{{ urlencode('Rp ' . number_format($paket->price, 0, ',', '.')) }}%20{{ urlencode($paket->description) }}.%20Mohon%20informasi%20lebih%20lanjut."
                                class="btn btn-primary btn-lg">
                                 Pesan Sekarang
                             </a>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-lg-5 col-md-6 mb-4">
-                    <div class="price-card">
-                        <div class="price-header">
-                            <h3>Paket Agen</h3>
-                            <div class="price-amount">Rp 10.000</div>
-                            <div class="price-period">per galon (min. 10 galon)</div>
-                        </div>
-                        <ul class="price-features">
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Air Minum Premium
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Galon Higienis
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Harga Khusus Agen
-                            </li>
-                            <li>
-                                <i class="fas fa-check-circle"></i>
-                                Layanan Prioritas
-                            </li>
-                        </ul>
-                        <div class="price-button">
-                            <a href="https://wa.me/6285893930323?text=Halo,%20saya%20tertarik%20dengan%20Paket%20Agen%20(Rp%2010.000%20per%20galon,%20minimal%2010%20galon).%20Saya%20ingin%20mendaftar%20sebagai%20agen.%20Mohon%20informasi%20persyaratan%20dan%20prosedurnya." 
-                               class="btn btn-primary btn-lg">
-                                Daftar Agen
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
+
 
     <!-- Cara Pemesanan Mudah -->
     <section class="process-section">
@@ -685,7 +645,7 @@
     </section>
 
     <!-- Galeri Produk -->
-    <section class="gallery-section section-padding">
+    <!-- <section class="gallery-section section-padding">
         <div class="container">
             <h2 class="text-center section-title">Galeri Produk</h2>
             <div class="row">
@@ -700,14 +660,14 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- Floating WhatsApp -->
     <div class="floating-whatsapp">
         <a href="https://wa.me/6285893930323?text=Halo,%20saya%20tertarik%20dengan%20layanan%20air%20galon%20Anda.%20Mohon%20informasi%20lebih%20lanjut%20mengenai%20produk%20dan%20layanan%20yang%20tersedia." 
            target="_blank">
             <i class="fab fa-whatsapp fa-2x"></i>
-            <span>Chat WhatsApp</span>
+            <span>Contact Me</span>
         </a>
     </div>
 

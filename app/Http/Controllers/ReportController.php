@@ -16,23 +16,19 @@ class ReportController extends Controller
 
     public function getChartData()
     {
-        $currentYear = Carbon::now()->year;
-        $currentMonth = Carbon::now()->month;
-
         $sql = "
             SELECT 
                 DATE(transaction_date) as date,
                 SUM(galon_in) as galon_in,
                 SUM(galon_out) as galon_out
             FROM transactions
-            WHERE YEAR(transaction_date) = ?
-            AND MONTH(transaction_date) = ?
-            AND is_active = TRUE
+            WHERE transaction_date >= DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)
+                AND is_active = TRUE
             GROUP BY DATE(transaction_date)
-            ORDER BY date
+            ORDER BY date ASC
         ";
 
-        $transactions = DB::select($sql, [$currentYear, $currentMonth]);
+        $transactions = DB::select($sql);
 
         return response()->json([
             'labels' => array_column($transactions, 'date'),
@@ -84,7 +80,8 @@ class ReportController extends Controller
             WHERE transaction_date >= DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH)
                 AND is_active = TRUE
             GROUP BY DATE_FORMAT(transaction_date, '%Y-%m')
-            ORDER BY month DESC
+            ORDER BY transaction_date DESC
+            LIMIT 3
         ";
 
         $monthlyData = DB::select($sql);
@@ -105,6 +102,7 @@ class ReportController extends Controller
                 AND is_active = TRUE
             GROUP BY DATE_FORMAT(transaction_date, '%Y-%m')
             ORDER BY month DESC
+            LIMIT 3
         ";
 
         $monthlyData = DB::select($sql);

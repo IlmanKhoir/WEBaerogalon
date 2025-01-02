@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\HargaGalon;
 
 class WaterGallonsController extends Controller
 {
     public function index()
     {
-        return view('welcome'); // Mengembalikan tampilan welcome.blade.php
+        $hargaGalon = HargaGalon::all();
+        return view('welcome', compact('hargaGalon')); // Mengembalikan tampilan welcome.blade.php
     }
 
     public function buy()
